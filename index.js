@@ -91,7 +91,7 @@ class Car {
     const milesLeft = this.milesPerGallon * this.tank;
     if (milesLeft > distance) {
       this.odometer += distance;
-      this.tank = this.tank - distance / this.milesPerGallon;
+      this.tank = (milesLeft - distance) / this.milesPerGallon;
     } else {
       this.tank = 0;
       this.odometer = milesLeft;
@@ -100,8 +100,10 @@ class Car {
   }
 }
 const myCar = new Car('Lexus', 30);
-myCar.fill(10); 
-console.log(myCar.drive(400));
+myCar.fill(10);
+
+// myCar.drive(301);
+console.log(myCar.drive(301)); 
 /*
     TASK 3
       - Write a Lambdasian class.
@@ -152,7 +154,31 @@ class Instructor extends Lambdasian {
   grade(student, subject) {
     return `${student.name} receives a perfect score on ${subject}`
   }
+  gradeEdit(student) {
+    // var plusOrMinus = Math.random() < 0.5 ? -1 : 1;
+    const isPositive = Math.random() > 0.5; 
+
+    let newGrade;
+    if (isPositive) {
+      const possiblePoints = 100 - student.grade;
+      newGrade = student.grade + Math.floor(Math.random()*possiblePoints +1);
+    } else {
+      newGrade = student.grade - Math.floor(Math.random()*student.grade + 1);
+    }
+    student.grade = newGrade;
+  } 
+  makeStudentGraduate(student) {
+    while (!student.graduate()) {
+      this.gradeEdit(student);
+    }
+  }
 }
+
+//Generate a positive or negative, if positive, take difference between 100 and students grade 
+//Math.random has to be that number between zero and the difference 
+//If negative, you take the difference between 0 and the grade
+//Math.random between zero and the difference 
+
 
 const pace = new Instructor({name: "Pace", age: 34, location: "I don't know", specialty: "Unit 1", favLanguage: "Javascript", catchPhrase:"???"});
 console.log(pace);
@@ -180,6 +206,7 @@ class Student extends Lambdasian {
     this.previousBackground = obj.previousBackground;
     this.className = obj.className;
     this.favSubjects = obj.favSubjects;
+    this.grade = 63;
   }
   listSubjects() {
     return `Loving ${this.favSubjects}!`;
@@ -190,14 +217,25 @@ class Student extends Lambdasian {
   sprintChallenge(subject) {
     return `${this.name} has begun sprint challenge on ${subject}`;
   }
+  graduate() {
+    return this.grade > 70;
+  }
 }
 
 const perfectStudent = new Student({name: 'Rika', age: 23, location: 'Los Angeles', previousBackground: "Microbiology", className: "webpt29", favSubjects: ['HTML', 'Javascript', 'CSS']});
-console.log(perfectStudent);
+// console.log(perfectStudent);
 console.log(perfectStudent.listSubjects());
 console.log(perfectStudent.PRAssignment('Classes'));
 console.log(perfectStudent.sprintChallenge('Classes'));
 
+// pace.gradeEdit(perfectStudent);
+// while (!perfectStudent.graduate()) {
+//   pace.gradeEdit(perfectStudent);
+// }
+
+pace.makeStudentGraduate(perfectStudent);
+
+console.log(perfectStudent);
 /*
     TASK 6
       - Write a ProjectManager class extending Instructor.
@@ -232,7 +270,7 @@ console.log(pm.debugsCode({name: 'Rika'}, 'Classes'));
 /*
     STRETCH PROBLEM (no tests!)
       - Extend the functionality of the Student by adding a prop called grade and setting it equal to a number between 1-100.
-      - Now that our students have a grade build out a method on the Instructor (this will be used by _BOTH_ instructors and PM's) that will randomly add or subtract points to a student's grade. _Math.random_ will help.
+      - Now that our students have a grade, build out a method on the Instructor (this will be used by _BOTH_ instructors and PM's) that will randomly add or subtract points to a student's grade. _Math.random_ will help.
       - Add a graduate method to a student.
         + This method, when called, will check the grade of the student and see if they're ready to graduate from Lambda School
         + If the student's grade is above a 70% let them graduate! Otherwise go back to grading their assignments to increase their score.
